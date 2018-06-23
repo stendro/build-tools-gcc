@@ -184,7 +184,7 @@ function setup_variables() {
 
     # Configuration variables
     CONFIGURATION=( "--disable-multilib" "--disable-werror"
-                    "LDFLAGS=$LGOLD" )
+                    "LDFLAGS=$LGOLD" "CFLAGS=-g0 -O2" "CXXFLAGS=-g0 -O2" )
     JOBS="-j$(($(nproc --all) + 1))"
 
     # Binary versions
@@ -614,11 +614,11 @@ function setup_env() {
 function build_binutils() {
     header "BUILDING BINUTILS"
     cd build-binutils || die "binutils build folder does not exist!"
-    ../binutils/configure "${CONFIGURATION[@]}" \
-                          --target=${TARGET} \
+    ../binutils/configure --target=${TARGET} \
                           --prefix="${INSTALL}" \
                           --enable-gold \
-                          --disable-gdb
+                          --disable-gdb \
+                          "${CONFIGURATION[@]}"
     make ${JOBS} || die "Error while building binutils!" -n
     make install ${JOBS} || die "Error while installing binutils!" -n
 }
@@ -638,10 +638,10 @@ function build_headers() {
 function build_gcc() {
     header "MAKING GCC"
     cd ../build-gcc || die "GCC build folder does not exist!"
-    ../gcc/configure "${CONFIGURATION[@]}" \
-                     --enable-languages=c,c++ \
+    ../gcc/configure --enable-languages=c,c++ \
                      --target=${TARGET} \
-                     --prefix="${INSTALL}"
+                     --prefix="${INSTALL}" \
+                     "${CONFIGURATION[@]}"
     make all-gcc ${JOBS} || die "Error while building gcc!" -n
     make install-gcc ${JOBS} || die "Error while installing gcc!" -n
     if [[ ${ARCH} = "x86_64" ]]; then
