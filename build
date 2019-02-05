@@ -167,8 +167,12 @@ function setup_variables() {
     RST="\033[0m"
     YLW="\033[01;33m"
 
+    # Use gold linker if available
+    [[ -n ld.gold ]] && LGOLD="-fuse-ld=gold"
+
     # Configuration variables
-    CONFIGURATION=( "--disable-multilib" "--disable-werror" )
+    CONFIGURATION=( "--disable-multilib" "--disable-werror"
+                    "LDFLAGS=$LGOLD" )
     JOBS="-j$(($(nproc --all) + 1))"
 
     # Binary versions
